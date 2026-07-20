@@ -1,7 +1,7 @@
 {
   "name": "chirpy",
   "version": "1.0.0",
-  "description": "A Twitter like social network for learning web servers",,
+  "description": "A Twitter like social network for learning web servers",
   "scripts": {
     "start": "tsx index.ts",
     "build": "tsc",
