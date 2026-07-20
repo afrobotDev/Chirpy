@@ -4,7 +4,7 @@
   "description": "A Twitter like social network for learning web servers",
   "scripts": {
     "start": "npx tsx src/index.ts",
-    "dev": "npx tsc && npx tsx src/index.ts",
+    "dev": "nodemon npx tsc && npx tsx src/index.ts",
     "build": "npx tsc",
     "typecheck": "npx tsc --noEmit",
     "test": ""
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
+    "nodemon": "^3.1.14",
     "prettier": "^3.9.5",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2"
