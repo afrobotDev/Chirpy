@@ -1,0 +1,29 @@
+{
+  "name": "chirpy",
+  "version": "1.0.0",
+  "description": "A Twitter like social network for learning web servers",,
+  "scripts": {
+    "start": "tsx index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afrobotDev/Chirpy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/afrobotDev/Chirpy/issues"
+  },
+  "homepage": "https://github.com/afrobotDev/Chirpy#readme",
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "prettier": "^3.9.5",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  }
+}
