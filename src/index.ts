@@ -1,12 +1,15 @@
-import express from "express";
-import path from "path";
+import express, { type Request, type Response } from "express";
 const app = express();
 const PORT = 8080;
 
-//app.use(express.static("../assets"));
+app.use("/app", express.static("src/app"));
 
-app.get("/assets/logo.png", (req, res) => {
-  res.sendFile(path.resolve("../assets/logo.png"));
+app.get("/healthz", (req: Request, res: Response) => {
+  res.set({
+    "Content-Type": "text/plain",
+    charset: "utf8",
+  });
+  res.status(200).send("OK");
 });
 
 app.listen(8080, () => {
