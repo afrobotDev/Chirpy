@@ -21,6 +21,7 @@ const middlewareMetricsInc = function (
 };
 
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
+app.use("/app/assets", express.static("assets"));
 
 const middlewareLogResponse = function (
   req: Request,
@@ -55,7 +56,7 @@ const middlewareresetReqs = function (
   res.sendStatus(200);
 };
 
-app.get("/healthz", (_req: Request, res: Response) => {
+app.get("/api/healthz", (_req: Request, res: Response) => {
   res.set({
     "Content-Type": "text/plain",
     charset: "utf8",
@@ -64,8 +65,8 @@ app.get("/healthz", (_req: Request, res: Response) => {
 });
 
 app.use("/", middlewareLogResponse);
-app.use("/metrics", middlewareNumReqs);
-app.use("/reset", middlewareresetReqs);
+app.use("/api/metrics", middlewareNumReqs);
+app.use("/api/reset", middlewareresetReqs);
 
 app.listen(8080, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
