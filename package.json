@@ -4,7 +4,7 @@
   "description": "A Twitter like social network for learning web servers",
   "scripts": {
     "start": "npx tsx src/index.ts",
-    "dev": "nodemon npx tsc && npx tsx src/index.ts",
+    "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
     "build": "npx tsc",
     "typecheck": "npx tsc --noEmit",
     "test": ""
