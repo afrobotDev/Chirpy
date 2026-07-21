@@ -87,12 +87,12 @@ app.post("/api/validate_chirp", (req: Request, res: Response) => {
   if (!req.body || typeof req.body.body !== "string") {
     return res.status(400).send({ error: "something went wrong" });
   }
-  const MAX_CHIRP_LENGTH: number = 140;
+  const MAX_CHIRP_LENGTH = 140;
   if (req.body.body.length > MAX_CHIRP_LENGTH)
     return res.status(400).send({ error: "Chirp is too long" });
 
-  const BANNED_WORDS: string[] = ["kerfuffle", "sharbert", "fornax"];
-  const cleanedBody: string = req.body.body
+  const BANNED_WORDS = ["kerfuffle", "sharbert", "fornax"];
+  const cleanedBody = req.body.body
     .toLowerCase()
     .split(" ")
     .map((word: string) => (BANNED_WORDS.includes(word) ? "****" : word))
