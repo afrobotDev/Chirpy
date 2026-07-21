@@ -44,7 +44,18 @@ const middlewareNumReqs = function (
   res: Response,
   _next: NextFunction,
 ) {
-  res.send(`Hits: ${requestNum.fileServerHits}`);
+  res.send(`
+<html>
+  <body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited ${requestNum.fileServerHits} times!</p>
+  </body>
+</html>
+  `);
+  res.set({
+    "Content-Type": "text/html",
+    charset: "utf8",
+  });
 };
 
 const middlewareresetReqs = function (
@@ -65,8 +76,8 @@ app.get("/api/healthz", (_req: Request, res: Response) => {
 });
 
 app.use("/", middlewareLogResponse);
-app.use("/api/metrics", middlewareNumReqs);
-app.use("/api/reset", middlewareresetReqs);
+app.use("/admin/metrics", middlewareNumReqs);
+app.use("/admin/reset", middlewareresetReqs);
 
 app.listen(8080, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
