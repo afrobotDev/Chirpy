@@ -77,7 +77,7 @@ app.get("/api/healthz", (_req: Request, res: Response) => {
 
 app.use("/", middlewareLogResponse);
 app.use("/admin/metrics", middlewareNumReqs);
-app.use("/admin/reset", middlewareresetReqs);
+app.post("/admin/reset", middlewareresetReqs);
 
 app.listen(8080, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
