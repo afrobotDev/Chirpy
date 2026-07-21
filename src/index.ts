@@ -4,11 +4,23 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
+import { type APIConfig } from "./config.js";
 
 const app: Express = express();
 const PORT = 8080;
+const requestNum: APIConfig = { fileServerHits: 0 };
 
-app.use("/app", express.static("src/app"));
+const middlewareMetricsInc = function (
+  _req: Request,
+  _res: Response,
+  next: NextFunction,
+) {
+  requestNum.fileServerHits++;
+
+  next();
+};
+
+app.use("/app", middlewareMetricsInc, express.static("src/app"));
 
 const middlewareLogResponse = function (
   req: Request,
@@ -26,6 +38,23 @@ const middlewareLogResponse = function (
   next();
 };
 
+const middlewareNumReqs = function (
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  res.send(`Hits: ${requestNum.fileServerHits}`);
+};
+
+const middlewareresetReqs = function (
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  requestNum.fileServerHits = 0;
+  res.sendStatus(200);
+};
+
 app.get("/healthz", (_req: Request, res: Response) => {
   res.set({
     "Content-Type": "text/plain",
@@ -34,8 +63,10 @@ app.get("/healthz", (_req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
+app.use("/", middlewareLogResponse);
+app.use("/metrics", middlewareNumReqs);
+app.use("/reset", middlewareresetReqs);
+
 app.listen(8080, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-app.use("/", middlewareLogResponse);
