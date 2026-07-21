@@ -10,6 +10,9 @@ const app: Express = express();
 const PORT = 8080;
 const requestNum: APIConfig = { fileServerHits: 0 };
 
+app.use(express.json());
+
+// middleware functions
 const middlewareMetricsInc = function (
   _req: Request,
   _res: Response,
@@ -19,9 +22,6 @@ const middlewareMetricsInc = function (
 
   next();
 };
-
-app.use("/app", middlewareMetricsInc, express.static("src/app"));
-app.use("/app/assets", express.static("assets"));
 
 const middlewareLogResponse = function (
   req: Request,
@@ -44,6 +44,11 @@ const middlewareNumReqs = function (
   res: Response,
   _next: NextFunction,
 ) {
+  res.set({
+    "Content-Type": "text/html",
+    charset: "utf8",
+  });
+
   res.send(`
 <html>
   <body>
@@ -52,10 +57,6 @@ const middlewareNumReqs = function (
   </body>
 </html>
   `);
-  res.set({
-    "Content-Type": "text/html",
-    charset: "utf8",
-  });
 };
 
 const middlewareresetReqs = function (
@@ -67,6 +68,7 @@ const middlewareresetReqs = function (
   res.sendStatus(200);
 };
 
+// api endpoints
 app.get("/api/healthz", (_req: Request, res: Response) => {
   res.set({
     "Content-Type": "text/plain",
@@ -75,9 +77,21 @@ app.get("/api/healthz", (_req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
+app.use("/app", middlewareMetricsInc, express.static("src/app"));
+app.use("/app/assets", express.static("assets"));
 app.use("/", middlewareLogResponse);
 app.use("/admin/metrics", middlewareNumReqs);
 app.post("/admin/reset", middlewareresetReqs);
+
+app.post("/api/validate_chirp", (req: Request, res: Response) => {
+  if (!req.body || typeof req.body.body !== "string") {
+    return res.status(400).send({ error: "something went wrong" });
+  }
+  if (req.body.body.length > 20)
+    return res.status(400).send({ error: "Chirp is too long" });
+
+  return res.status(200).send({ valid: true });
+});
 
 app.listen(8080, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
