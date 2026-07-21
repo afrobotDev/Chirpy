@@ -1,10 +1,32 @@
-import express, { type Request, type Response } from "express";
-const app = express();
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
+
+const app: Express = express();
 const PORT = 8080;
 
 app.use("/app", express.static("src/app"));
 
-app.get("/healthz", (req: Request, res: Response) => {
+const middlewareLogResponse = function (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  res.on("finish", () => {
+    if (res.statusCode !== 200) {
+      console.log(
+        `[NON-OK] ${req.method} ${req.url} - Status: ${res.statusCode}`,
+      );
+    }
+  });
+
+  next();
+};
+
+app.get("/healthz", (_req: Request, res: Response) => {
   res.set({
     "Content-Type": "text/plain",
     charset: "utf8",
@@ -15,3 +37,5 @@ app.get("/healthz", (req: Request, res: Response) => {
 app.listen(8080, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+app.use("/", middlewareLogResponse);
