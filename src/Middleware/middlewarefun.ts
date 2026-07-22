@@ -65,8 +65,8 @@ function handleError(
   res: Response,
   _next: NextFunction,
 ) {
-  console.log(err.message);
-  return res.status(500).json({ error: "Something went wrong on our end" });
+  const statusCode = (err as any).statusCode || 400;
+  return res.status(statusCode).json({ error: err.message });
 }
 
 export {
