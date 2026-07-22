@@ -15,6 +15,8 @@ import {
 
 const app: Express = express();
 const PORT = 8080;
+const MAX_CHIRP_LENGTH = 140;
+const BANNED_WORDS = ["kerfuffle", "sharbert", "fornax"];
 
 app.use(express.json());
 
@@ -33,20 +35,18 @@ app.post(
     if (!req.body || typeof req.body.body !== "string") {
       return res.status(400).send({ error: "something went wrong" });
     }
-    const MAX_CHIRP_LENGTH = 140;
     if (req.body.body.length > MAX_CHIRP_LENGTH) {
       const err = new Error("Chirp is too long");
       return next(err);
     }
 
-    const BANNED_WORDS = ["kerfuffle", "sharbert", "fornax"];
     const cleanedBody = req.body.body
       .toLowerCase()
       .split(" ")
       .map((word: string) => (BANNED_WORDS.includes(word) ? "****" : word))
       .join(" ");
 
-    return res.status(200).send({ cleanedBody: `${cleanedBody}` });
+    return res.status(200).send({ cleanedBody });
   },
 );
 
