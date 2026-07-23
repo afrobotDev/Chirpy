@@ -32,7 +32,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "drizzle.config.ts"],
+  "include": ["src/**/*.ts", "drizzle.config.ts", "src/config.ts"],
   "exclude": ["node_modules", "dist"]
 }
 
