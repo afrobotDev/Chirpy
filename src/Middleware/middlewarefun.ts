@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import type { APIConfig } from "../config.js";
 
-const requestNum: APIConfig = { fileServerHits: 0 };
+const requestNum: APIConfig = { fileServerHits: 0, dbURL: " " };
 
 const middlewareMetricsInc = function (
   _req: Request,
