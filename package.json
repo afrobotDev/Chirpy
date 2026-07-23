@@ -7,6 +7,8 @@
     "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
     "build": "npx tsc",
     "typecheck": "npx tsc --noEmit",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
     "test": ""
   },
   "repository": {
