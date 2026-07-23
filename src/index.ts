@@ -58,11 +58,15 @@ app.post("/api/users", async (req: Request, res: Response) => {
   res.status(201).json(result);
 });
 
+// Delete all users
+app.post("/admin/reset", (req: Request, res: Response) => {
+  // pass
+});
+
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
 app.use("/app/assets", express.static("assets"));
 app.use("/", middlewareLogResponse);
 app.use("/admin/metrics", middlewareNumReqs);
-app.post("/admin/reset", middlewareresetReqs);
 app.use(handleError);
 
 app.listen(8080, () => {
