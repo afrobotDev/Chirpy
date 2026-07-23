@@ -4,6 +4,7 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
+import { createUser } from "./db/queries/users.js";
 
 import {
   middlewareMetricsInc,
@@ -49,6 +50,13 @@ app.post(
     return res.status(200).send({ cleanedBody });
   },
 );
+
+// Create a user
+app.post("/api/users", async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const result = await createUser({ email });
+  res.status(201).json(result);
+});
 
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
 app.use("/app/assets", express.static("assets"));
