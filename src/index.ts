@@ -4,15 +4,16 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
-import { createUser } from "./db/queries/users.js";
+import { createUser, deleteUsers } from "./db/queries/users.js";
+import { type APIConfig, config } from "./config.js";
 
 import {
   middlewareMetricsInc,
   middlewareLogResponse,
   middlewareNumReqs,
-  middlewareresetReqs,
   handleError,
 } from "./Middleware/middlewarefun.js";
+import { ForbiddenError } from "./Middleware/custom_errClases.js";
 
 const app: Express = express();
 const PORT = 8080;
@@ -59,8 +60,12 @@ app.post("/api/users", async (req: Request, res: Response) => {
 });
 
 // Delete all users
-app.post("/admin/reset", (req: Request, res: Response) => {
-  // pass
+app.post("/admin/reset", async (_req: Request, res: Response, next: NextFunction) => {
+  if ((config as APIConfig).PLATFORM !== "dev") {
+    return next(new ForbiddenError("You are not in local dev environment"));
+  }
+  await deleteUsers();
+  res.sendStatus(200);
 });
 
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
