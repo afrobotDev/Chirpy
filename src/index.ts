@@ -4,7 +4,7 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
-import { createUser, deleteUsers } from "./db/queries/users.js";
+import { createUser, deleteUsers, createChirp } from "./db/queries/users.js";
 import { type APIConfig, config } from "./config.js";
 
 import {
@@ -13,7 +13,10 @@ import {
   middlewareNumReqs,
   handleError,
 } from "./Middleware/middlewarefun.js";
-import { ForbiddenError } from "./Middleware/custom_errClases.js";
+import {
+  ForbiddenError,
+  BadRequestError,
+} from "./Middleware/custom_errClases.js";
 
 const app: Express = express();
 const PORT = 8080;
@@ -32,23 +35,24 @@ app.get("/api/healthz", (_req: Request, res: Response) => {
 });
 
 app.post(
-  "/api/validate_chirp",
+  "/api/chirps",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body || typeof req.body.body !== "string") {
-      return res.status(400).send({ error: "something went wrong" });
+      return next(new BadRequestError("something went wrong"));
     }
     if (req.body.body.length > MAX_CHIRP_LENGTH) {
       const err = new Error("Chirp is too long");
       return next(err);
     }
+    const { body, userId } = req.body;
 
-    const cleanedBody = req.body.body
+    const cleanedBody = body
       .toLowerCase()
       .split(" ")
       .map((word: string) => (BANNED_WORDS.includes(word) ? "****" : word))
       .join(" ");
-
-    return res.status(200).send({ cleanedBody });
+    const result = await createChirp({ body: cleanedBody, userId });
+    return res.status(201).json(result);
   },
 );
 
@@ -60,13 +64,16 @@ app.post("/api/users", async (req: Request, res: Response) => {
 });
 
 // Delete all users
-app.post("/admin/reset", async (_req: Request, res: Response, next: NextFunction) => {
-  if ((config as APIConfig).PLATFORM !== "dev") {
-    return next(new ForbiddenError("You are not in local dev environment"));
-  }
-  await deleteUsers();
-  res.sendStatus(200);
-});
+app.post(
+  "/admin/reset",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    if ((config as APIConfig).PLATFORM !== "dev") {
+      return next(new ForbiddenError("You are not in local dev environment"));
+    }
+    await deleteUsers();
+    res.sendStatus(200);
+  },
+);
 
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
 app.use("/app/assets", express.static("assets"));
