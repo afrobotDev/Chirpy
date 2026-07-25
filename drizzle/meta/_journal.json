@@ -15,6 +15,13 @@
       "when": 1784877773303,
       "tag": "0001_milky_gideon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784973476494,
+      "tag": "0002_wonderful_scorpion",
+      "breakpoints": true
     }
   ]
 }
