@@ -1,4 +1,5 @@
 import { asc, eq } from "drizzle-orm";
+import { type Request } from "express";
 import { db } from "../index.js";
 import { type NewUser, type NewChirp, users, chirps } from "../schema.js";
 
@@ -27,10 +28,10 @@ export async function getChirps() {
   return result;
 }
 
-export async function getOneChirp() {
+export async function getOneChirp(req: Request, chirpId: string) {
   const [result] = await db
     .select()
     .from(chirps)
-    .where(eq(chirps.userId, users.id));
+    .where(eq(chirps.id, `${req.params}.${chirpId}`));
   return result;
 }
