@@ -24,4 +24,5 @@ export async function createChirp(chirp: NewChirp) {
 
 export async function getChirps() {
   const [result] = await db.select().from(users).orderBy(asc(users.createdAt));
+  return result;
 }
