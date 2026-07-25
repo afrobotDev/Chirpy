@@ -66,7 +66,7 @@ app.post(
 
 // get all chirps
 app.get("/api/chirps", async (_req: Request, res: Response) => {
-  const result = await getChrips();
+  const result = await getChirps();
   res.status(200).json(result);
 });
 
