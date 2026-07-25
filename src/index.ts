@@ -73,7 +73,7 @@ app.get("/api/chirps", async (_req: Request, res: Response) => {
 
 // get a single chirp
 app.get("/api/chirps/:chirpId", async (req: Request, res: Response) => {
-  const result = await getOneChirp(req, req.params.chirpId as string);
+  const result = await getOneChirp(req.params.chirpId as string);
   return res.status(200).json(result);
 });
 
