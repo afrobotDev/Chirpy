@@ -75,7 +75,7 @@ app.get("/api/chirps", async (_req: Request, res: Response) => {
 app.post("/api/users", async (req: Request, res: Response) => {
   const { email } = req.body;
   const result = await createUser({ email });
-  res.status(201).json(result);
+  return res.status(201).json(result);
 });
 
 // Delete all users
@@ -86,8 +86,8 @@ app.delete(
       return next(new ForbiddenError("You are not in local dev environment"));
     }
     await deleteUsers();
-    res.sendStatus(200);
-  },
+  return res.sendStatus(200);
+},
 );
 
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
