@@ -10,6 +10,7 @@ import {
   deleteUsers,
   createChirp,
   getChirps,
+  getOneChirp,
 } from "./db/queries/users.js";
 import { type APIConfig, config } from "./config.js";
 
@@ -70,6 +71,12 @@ app.get("/api/chirps", async (_req: Request, res: Response) => {
   return res.status(200).json(result);
 });
 
+// get a single chirp
+app.get("/api/chirps/:chirpId", async (req: Request, res: Response) => {
+  const result = await getOneChirp(req, req.params.chirpId as string);
+  return res.status(200).json(result);
+});
+
 // Users resource
 // create a user
 app.post("/api/users", async (req: Request, res: Response) => {
@@ -86,8 +93,8 @@ app.delete(
       return next(new ForbiddenError("You are not in local dev environment"));
     }
     await deleteUsers();
-  return res.sendStatus(200);
-},
+    return res.sendStatus(200);
+  },
 );
 
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
