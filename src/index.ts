@@ -5,7 +5,12 @@ import express, {
   type Response,
   type NextFunction,
 } from "express";
-import { createUser, deleteUsers, createChirp } from "./db/queries/users.js";
+import {
+  createUser,
+  deleteUsers,
+  createChirp,
+  getChirps,
+} from "./db/queries/users.js";
 import { type APIConfig, config } from "./config.js";
 
 import {
@@ -35,6 +40,8 @@ app.get("/api/healthz", (_req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
+// Chirps resouce
+// create new chirp
 app.post(
   "/api/chirps",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -57,7 +64,14 @@ app.post(
   },
 );
 
-// Create a user
+// get all chirps
+app.get("/api/chirps", async (_req: Request, res: Response) => {
+  const result = await getChrips();
+  res.status(200).json(result);
+});
+
+// Users resource
+// create a user
 app.post("/api/users", async (req: Request, res: Response) => {
   const { email } = req.body;
   const result = await createUser({ email });
