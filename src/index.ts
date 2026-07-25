@@ -65,7 +65,7 @@ app.post("/api/users", async (req: Request, res: Response) => {
 });
 
 // Delete all users
-app.post(
+app.delete(
   "/admin/reset",
   async (_req: Request, res: Response, next: NextFunction) => {
     if ((config as APIConfig).PLATFORM !== "dev") {
