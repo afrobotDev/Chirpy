@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, desc } from "drizzle-orm";
 import { db } from "../index.js";
 import { type NewUser, type NewChirp, users, chirps } from "../schema.js";
 
@@ -19,6 +19,11 @@ export async function createUser(
 export async function getUser(email: string): Promise<UserResponse> {
   const [result] = await db.select().from(users).where(eq(users.email, email));
   return result as UserResponse;
+}
+
+export async function getUsers(): Promise<UserResponse[]> {
+  const result = await db.select().from(users).orderBy(desc(users.createdAt));
+  return result as UserResponse[];
 }
 
 export async function deleteUsers() {
