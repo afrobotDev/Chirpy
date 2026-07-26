@@ -1,13 +1,12 @@
 import { asc, eq } from "drizzle-orm";
-import { type Request } from "express";
 import { db } from "../index.js";
 import { type NewUser, type NewChirp, users, chirps } from "../schema.js";
 
 // Users resouce
-export async function createUser(user: NewUser) {
+export async function createUser(email: string, password: string) {
   const [result] = await db
     .insert(users)
-    .values(user)
+    .values({ email, hashedPassword: password })
     .onConflictDoNothing()
     .returning();
   return result;
