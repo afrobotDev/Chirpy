@@ -3,13 +3,17 @@ import { db } from "../index.js";
 import { type NewUser, type NewChirp, users, chirps } from "../schema.js";
 
 // Users resouce
-export async function createUser(email: string, password: string) {
+type UserResponse = Omit<NewUser, "hashedPassword">;
+export async function createUser(
+  email: string,
+  password: string,
+): Promise<UserResponse> {
   const [result] = await db
     .insert(users)
     .values({ email, hashedPassword: password })
     .onConflictDoNothing()
     .returning();
-  return result;
+  return result as UserResponse;
 }
 
 export async function deleteUsers() {
