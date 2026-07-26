@@ -6,7 +6,9 @@ import express, {
   type NextFunction,
 } from "express";
 import {
+  type UserResponse,
   createUser,
+  getUser,
   deleteUsers,
   createChirp,
   getChirps,
@@ -94,7 +96,8 @@ app.post("/api/login", async (req: Request, res: Response) => {
   if (!passwordIsValid) {
     return res.status(401).json({ message: "invalid credential" });
   }
-  return res.status(200).json({ message: "logged in successfully" });
+  const result = await getUser(email);
+  return res.status(200).json({ result });
 });
 
 // Delete all users
