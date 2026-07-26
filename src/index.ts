@@ -6,9 +6,9 @@ import express, {
   type NextFunction,
 } from "express";
 import {
-  type UserResponse,
   createUser,
   getUser,
+  getUsers,
   deleteUsers,
   createChirp,
   getChirps,
@@ -81,12 +81,18 @@ app.get("/api/chirps/:chirpId", async (req: Request, res: Response) => {
 });
 
 // Users resource
-// create a user
+// Create a user
 app.post("/api/users", async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const hashedPassword = await hashPassword(password);
   const result = await createUser(email, hashedPassword);
   return res.status(201).json(result);
+});
+
+// Get all users
+app.get("/api/users", async (_req: Request, res: Response) => {
+  const result = await getUsers();
+  return res.status(200).json({ result });
 });
 
 // Login a user
