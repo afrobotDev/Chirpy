@@ -1,4 +1,6 @@
 import argon2 from "argon2";
+import jwt from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { users } from "./db/schema.js";
@@ -33,4 +35,20 @@ export async function checkPasswordHash(
     }
     throw err;
   }
+}
+
+type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
+export function makeJWT(
+  userId: string,
+  expiresIn: number,
+  secret: string,
+): string {
+  const now = Math.floor(Date.now() / 1000);
+  const payloadJwt: payload = {
+    iss: "chirpy",
+    sub: userId,
+    iat: now,
+    exp: now + expiresIn,
+  };
+  return jwt.sign(payloadJwt, secret);
 }
