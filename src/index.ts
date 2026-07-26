@@ -24,6 +24,7 @@ import {
   ForbiddenError,
   BadRequestError,
 } from "./Middleware/custom_errClases.js";
+import { hashPassword } from "./auth.js";
 
 const app: Express = express();
 const PORT = 8080;
@@ -80,8 +81,9 @@ app.get("/api/chirps/:chirpId", async (req: Request, res: Response) => {
 // Users resource
 // create a user
 app.post("/api/users", async (req: Request, res: Response) => {
-  const { email } = req.body;
-  const result = await createUser({ email });
+  const { email, password } = req.body;
+  const hashedPassword = await hashPassword(password);
+  const result = await createUser(email, hashedPassword);
   return res.status(201).json(result);
 });
 
