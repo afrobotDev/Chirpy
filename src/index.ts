@@ -87,6 +87,7 @@ app.post("/api/users", async (req: Request, res: Response) => {
   return res.status(201).json(result);
 });
 
+// Login a user
 app.post("/api/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const passwordIsValid = await checkPasswordHash(password, email);
