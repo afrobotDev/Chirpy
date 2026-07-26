@@ -8,22 +8,26 @@ export async function createUser(
   email: string,
   password: string,
 ): Promise<UserResponse> {
-  const [result] = await db
+  const result = await db
     .insert(users)
     .values({ email, hashedPassword: password })
     .onConflictDoNothing()
     .returning();
-  return result as UserResponse;
+  if (!result[0]) throw new Error("Failed to create user");
+  const { hashedPassword: _, ...user } = result[0];
+  return user;
 }
 
 export async function getUser(email: string): Promise<UserResponse> {
-  const [result] = await db.select().from(users).where(eq(users.email, email));
-  return result as UserResponse;
+  const result = await db.select().from(users).where(eq(users.email, email));
+  if (!result[0]) throw new Error("User not found");
+  const { hashedPassword: _, ...user } = result[0];
+  return user;
 }
 
 export async function getUsers(): Promise<UserResponse[]> {
   const result = await db.select().from(users).orderBy(desc(users.createdAt));
-  return result as UserResponse[];
+  return result.map(({ hashedPassword: _, ...user }) => user);
 }
 
 export async function deleteUsers() {
