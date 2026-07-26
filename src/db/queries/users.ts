@@ -3,7 +3,7 @@ import { db } from "../index.js";
 import { type NewUser, type NewChirp, users, chirps } from "../schema.js";
 
 // Users resouce
-type UserResponse = Omit<NewUser, "hashedPassword">;
+export type UserResponse = Omit<NewUser, "hashedPassword">;
 export async function createUser(
   email: string,
   password: string,
@@ -13,6 +13,11 @@ export async function createUser(
     .values({ email, hashedPassword: password })
     .onConflictDoNothing()
     .returning();
+  return result as UserResponse;
+}
+
+export async function getUser(email: string): Promise<UserResponse> {
+  const [result] = await db.select().from(users).where(eq(users.email, email));
   return result as UserResponse;
 }
 
