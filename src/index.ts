@@ -89,9 +89,11 @@ app.post("/api/users", async (req: Request, res: Response) => {
 
 app.post("api/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const passwordIsValid = checkPasswordHash(password, email);
-  if (!passwordIsValid) res.status(401).json({ message: "invalid credential" });
-  res.status(200).json({ message: "logged in successfully" });
+  const passwordIsValid = await checkPasswordHash(password, email);
+  if (!passwordIsValid) {
+    return res.status(401).json({ message: "invalid credential" });
+  }
+  return res.status(200).json({ message: "logged in successfully" });
 });
 
 // Delete all users
