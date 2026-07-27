@@ -64,17 +64,3 @@ export function validateJWT(tokenString: string, secret: string): string {
     throw err;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
