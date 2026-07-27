@@ -52,3 +52,29 @@ export function makeJWT(
   };
   return jwt.sign(payloadJwt, secret);
 }
+
+export function validateJWT(tokenString: string, secret: string): string {
+  try {
+    const decoded = jwt.verify(tokenString, secret) as payload;
+    return decoded.sub!;
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error("invalid token");
+    }
+    throw err;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
