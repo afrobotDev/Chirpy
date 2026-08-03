@@ -26,7 +26,7 @@ import {
   ForbiddenError,
   BadRequestError,
 } from "./Middleware/custom_errClases.js";
-import { hashPassword, checkPasswordHash, makeJWT } from "./auth.js";
+import { hashPassword, checkPasswordHash, makeJWT, getBearerToken, validateJWT } from "./auth.js";
 
 const app: Express = express();
 const PORT = 8080;
@@ -56,8 +56,11 @@ app.post(
       const err = new Error("Chirp is too long");
       return next(err);
     }
-    const { body, userId } = req.body;
 
+    const token = getBearerToken(req);
+    const userId = validateJWT(token, process.env.SECRET_JWT ?? "");
+
+    const { body } = req.body;
     const cleanedBody = body
       .toLowerCase()
       .split(" ")
