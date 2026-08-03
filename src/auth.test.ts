@@ -18,7 +18,7 @@ vi.mock("./db/schema.js", () => ({
   users: { email: "email", hashedPassword: "hashedPassword" },
 }));
 
-import { hashPassword, checkPasswordHash, makeJWT, validateJWT } from "./auth.js";
+import { hashPassword, checkPasswordHash, makeJWT, validateJWT, getBearerToken } from "./auth.js";
 
 beforeEach(() => {
   mocks.mockWhere.mockReset();
@@ -96,5 +96,37 @@ describe("makeJWT", () => {
     expect(() => {
       validateJWT(token, secret);
     }).toThrow("invalid token");
+  });
+});
+
+function mockRequest(authHeader: string | undefined) {
+  return {
+    get: (name: string) => {
+      if (name === "Authorization") return authHeader;
+      return undefined;
+    },
+  } as any;
+}
+
+describe("getBearerToken", () => {
+  it("should extract token from Bearer header", () => {
+    const token = getBearerToken(mockRequest("Bearer abc123"));
+    expect(token).toBe("abc123");
+  });
+
+  it("should handle extra whitespace around the token", () => {
+    const token = getBearerToken(mockRequest("Bearer   abc123   "));
+    expect(token).toBe("abc123");
+  });
+
+  it("should be case-insensitive for Bearer prefix", () => {
+    const token = getBearerToken(mockRequest("bearer abc123"));
+    expect(token).toBe("abc123");
+  });
+
+  it("should throw when Authorization header is missing", () => {
+    expect(() => {
+      getBearerToken(mockRequest(undefined));
+    }).toThrow("no authorization header");
   });
 });
