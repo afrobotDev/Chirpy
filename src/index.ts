@@ -26,7 +26,7 @@ import {
   ForbiddenError,
   BadRequestError,
 } from "./Middleware/custom_errClases.js";
-import { hashPassword, checkPasswordHash } from "./auth.js";
+import { hashPassword, checkPasswordHash, makeJWT } from "./auth.js";
 
 const app: Express = express();
 const PORT = 8080;
@@ -97,13 +97,15 @@ app.get("/api/users", async (_req: Request, res: Response) => {
 
 // Login a user
 app.post("/api/login", async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password, expiresInSeconds } = req.body;
   const passwordIsValid = await checkPasswordHash(password, email);
   if (!passwordIsValid) {
     return res.status(401).json({ message: "invalid credential" });
   }
   const result = await getUser(email);
-  return res.status(200).json({ result });
+  const expiration = Math.min(expiresInSeconds ?? 3600, 3600);
+  const token = makeJWT(result.id!, expiration, process.env.SECRET_JWT ?? "");
+  return res.status(200).json({ result, token });
 });
 
 // Delete all users
