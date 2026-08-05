@@ -1,6 +1,6 @@
 import { asc, eq, desc } from "drizzle-orm";
 import { db } from "../index.js";
-import { type NewUser, type NewChirp, users, chirps } from "../schema.js";
+import { type NewUser, type NewChirp, type NewRefreshTokens, users, chirps, refreshTokens } from "../schema.js";
 
 // Users resouce
 export type UserResponse = Omit<NewUser, "hashedPassword">;
@@ -47,5 +47,11 @@ export async function getChirps() {
 
 export async function getOneChirp(chirpId: string) {
   const [result] = await db.select().from(chirps).where(eq(chirps.id, chirpId));
+  return result;
+}
+
+// Refresh Tokens resource
+export async function createRefreshToken(refreshToken: NewRefreshTokens) {
+  const [result] = await db.insert(refreshTokens).values(refreshToken).returning();
   return result;
 }
