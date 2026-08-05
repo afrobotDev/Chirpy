@@ -13,9 +13,9 @@ import {
   createChirp,
   getChirps,
   getOneChirp,
+  createRefreshToken,
 } from "./db/queries/users.js";
 import { type APIConfig, config } from "./config.js";
-
 import {
   middlewareMetricsInc,
   middlewareLogResponse,
@@ -26,7 +26,14 @@ import {
   ForbiddenError,
   BadRequestError,
 } from "./Middleware/custom_errClases.js";
-import { hashPassword, checkPasswordHash, makeJWT, getBearerToken, validateJWT } from "./auth.js";
+import {
+  hashPassword,
+  checkPasswordHash,
+  makeJWT,
+  getBearerToken,
+  validateJWT,
+  makeRefreshToken,
+} from "./auth.js";
 
 const app: Express = express();
 const PORT = 8080;
@@ -100,15 +107,25 @@ app.get("/api/users", async (_req: Request, res: Response) => {
 
 // Login a user
 app.post("/api/login", async (req: Request, res: Response) => {
-  const { email, password, expiresInSeconds } = req.body;
+  const { email, password } = req.body;
   const passwordIsValid = await checkPasswordHash(password, email);
   if (!passwordIsValid) {
     return res.status(401).json({ message: "invalid credential" });
   }
   const result = await getUser(email);
-  const expiration = Math.min(expiresInSeconds ?? 3600, 3600);
-  const token = makeJWT(result.id!, expiration, process.env.SECRET_JWT ?? "");
-  return res.status(200).json({ result, token });
+
+  const accessToken = makeJWT(result.id!, 3600, process.env.SECRET_JWT ?? "");
+
+  const refreshToken = makeRefreshToken();
+  const expiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+  await createRefreshToken({
+    token: refreshToken,
+    userId: result.id!,
+    expiresAt,
+    revokedAt: null,
+  });
+
+  return res.status(200).json({ result, token: accessToken, refreshToken });
 });
 
 // Delete all users
