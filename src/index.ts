@@ -15,6 +15,7 @@ import {
   getOneChirp,
   createRefreshToken,
   getRefreshToken,
+  revokeRefreshToken,
 } from "./db/queries/users.js";
 import { type APIConfig, config } from "./config.js";
 import {
@@ -141,6 +142,13 @@ app.post("/api/refresh", async (req: Request, res: Response, next: NextFunction)
 
   const accessToken = makeJWT(storedToken.userId, 3600, process.env.SECRET_JWT ?? "");
   return res.status(200).json({ token: accessToken });
+});
+
+// Revoke refresh token
+app.post("/api/revoke", async (req: Request, res: Response) => {
+  const refreshToken = getBearerToken(req);
+  await revokeRefreshToken(refreshToken);
+  return res.sendStatus(204);
 });
 
 // Delete all users
