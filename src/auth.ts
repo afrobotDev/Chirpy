@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import type { Request } from "express";
@@ -72,4 +73,8 @@ export function getBearerToken(req: Request): string {
     throw new Error("no authorization header");
   }
   return authHeader.replace(/^Bearer\s+/i, "").trim();
+}
+
+export function makeRefreshToken() {
+  return crypto.randomBytes(32).toString("hex");
 }
