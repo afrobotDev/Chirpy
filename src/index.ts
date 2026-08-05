@@ -14,6 +14,7 @@ import {
   getChirps,
   getOneChirp,
   createRefreshToken,
+  getRefreshToken,
 } from "./db/queries/users.js";
 import { type APIConfig, config } from "./config.js";
 import {
@@ -25,6 +26,7 @@ import {
 import {
   ForbiddenError,
   BadRequestError,
+  UnauthorizedError,
 } from "./Middleware/custom_errClases.js";
 import {
   hashPassword,
@@ -126,6 +128,19 @@ app.post("/api/login", async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({ result, token: accessToken, refreshToken });
+});
+
+// Refresh access token
+app.post("/api/refresh", async (req: Request, res: Response, next: NextFunction) => {
+  const refreshToken = getBearerToken(req);
+  const storedToken = await getRefreshToken(refreshToken);
+
+  if (!storedToken || storedToken.revokedAt || storedToken.expiresAt < new Date()) {
+    return next(new UnauthorizedError("invalid refresh token"));
+  }
+
+  const accessToken = makeJWT(storedToken.userId, 3600, process.env.SECRET_JWT ?? "");
+  return res.status(200).json({ token: accessToken });
 });
 
 // Delete all users
