@@ -55,3 +55,8 @@ export async function createRefreshToken(refreshToken: NewRefreshTokens) {
   const [result] = await db.insert(refreshTokens).values(refreshToken).returning();
   return result;
 }
+
+export async function getRefreshToken(token: string) {
+  const [result] = await db.select().from(refreshTokens).where(eq(refreshTokens.token, token));
+  return result;
+}
