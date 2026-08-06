@@ -41,13 +41,15 @@ export async function updateUserCredentials(
   userId: string,
   email: string,
   password: string,
-) {
+): Promise<UserResponse> {
   const [result] = await db
     .update(users)
     .set({ email, hashedPassword: password })
     .where(eq(users.id, userId))
     .returning();
-  return result;
+  if (!result) throw new Error("User not found");
+  const { hashedPassword: _, ...user } = result;
+  return user;
 }
 
 export async function deleteUsers() {
