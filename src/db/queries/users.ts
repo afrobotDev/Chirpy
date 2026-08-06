@@ -56,6 +56,15 @@ export async function deleteUsers() {
   await db.delete(users);
 }
 
+export async function deleteUser(userId: string): Promise<UserResponse> {
+  const [result] = await db
+    .delete(users)
+    .where(eq(users.id, userId))
+    .returning();
+  if (!result) throw new Error("User not found");
+  return result;
+}
+
 // Chirps resource
 export async function createChirp(chirp: NewChirp) {
   const [result] = await db.insert(chirps).values(chirp).returning();
@@ -69,6 +78,14 @@ export async function getChirps() {
 
 export async function getOneChirp(chirpId: string) {
   const [result] = await db.select().from(chirps).where(eq(chirps.id, chirpId));
+  return result;
+}
+
+export async function deleteChirp(chirpId: string) {
+  const [result] = await db
+    .delete(chirps)
+    .where(eq(chirps.id, chirpId))
+    .returning();
   return result;
 }
 
