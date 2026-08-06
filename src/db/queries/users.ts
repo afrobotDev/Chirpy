@@ -1,6 +1,13 @@
 import { asc, eq, desc } from "drizzle-orm";
 import { db } from "../index.js";
-import { type NewUser, type NewChirp, type NewRefreshTokens, users, chirps, refreshTokens } from "../schema.js";
+import {
+  type NewUser,
+  type NewChirp,
+  type NewRefreshTokens,
+  users,
+  chirps,
+  refreshTokens,
+} from "../schema.js";
 
 // Users resouce
 export type UserResponse = Omit<NewUser, "hashedPassword">;
@@ -30,6 +37,19 @@ export async function getUsers(): Promise<UserResponse[]> {
   return result.map(({ hashedPassword: _, ...user }) => user);
 }
 
+export async function updateUserCredentials(
+  userId: string,
+  email: string,
+  password: string,
+) {
+  const [result] = await db
+    .update(users)
+    .set({ email, hashedPassword: password })
+    .where(eq(users.id, userId))
+    .returning();
+  return result;
+}
+
 export async function deleteUsers() {
   await db.delete(users);
 }
@@ -52,12 +72,18 @@ export async function getOneChirp(chirpId: string) {
 
 // Refresh Tokens resource
 export async function createRefreshToken(refreshToken: NewRefreshTokens) {
-  const [result] = await db.insert(refreshTokens).values(refreshToken).returning();
+  const [result] = await db
+    .insert(refreshTokens)
+    .values(refreshToken)
+    .returning();
   return result;
 }
 
 export async function getRefreshToken(token: string) {
-  const [result] = await db.select().from(refreshTokens).where(eq(refreshTokens.token, token));
+  const [result] = await db
+    .select()
+    .from(refreshTokens)
+    .where(eq(refreshTokens.token, token));
   return result;
 }
 
