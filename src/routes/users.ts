@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 import { config } from "../config.js";
 import { hashPassword, getBearerToken, validateJWT } from "../auth.js";
 import {
@@ -6,6 +6,7 @@ import {
   getUsers,
   updateUserCredentials,
 } from "../db/queries/users.js";
+import { UnauthorizedError } from "../Middleware/custom_errClases.js";
 
 export const usersRouter = Router();
 
@@ -22,11 +23,18 @@ usersRouter.get("/users", async (_req: Request, res: Response) => {
   return res.status(200).json({ result: users });
 });
 
-usersRouter.put("/users", async (req: Request, res: Response) => {
+usersRouter.put("/users", async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   const hashedPassword = await hashPassword(password);
-  const token = getBearerToken(req);
-  const userId = validateJWT(token, config.jwt_secret);
+
+  let userId: string;
+  try {
+    const token = getBearerToken(req);
+    userId = validateJWT(token, config.jwt_secret);
+  } catch {
+    return next(new UnauthorizedError("invalid or missing token"));
+  }
+
   const userCredentials = await updateUserCredentials(
     userId,
     email,
