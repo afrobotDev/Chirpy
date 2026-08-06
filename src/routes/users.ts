@@ -5,8 +5,9 @@ import {
   createUser,
   getUsers,
   updateUserCredentials,
+  deleteUser,
 } from "../db/queries/users.js";
-import { UnauthorizedError } from "../Middleware/custom_errClases.js";
+import { UnauthorizedError, ForbiddenError } from "../Middleware/custom_errClases.js";
 
 export const usersRouter = Router();
 
@@ -41,4 +42,21 @@ usersRouter.put("/users", async (req: Request, res: Response, next: NextFunction
     hashedPassword,
   );
   return res.status(200).json(userCredentials);
+});
+
+usersRouter.delete("/users/:userId", async (req: Request, res: Response, next: NextFunction) => {
+  let userId: string;
+  try {
+    const token = getBearerToken(req);
+    userId = validateJWT(token, config.jwt_secret);
+  } catch {
+    return next(new UnauthorizedError("invalid or missing token"));
+  }
+
+  if (userId !== req.params.userId) {
+    return next(new ForbiddenError("you are not authorized to delete this user"));
+  }
+
+  await deleteUser(userId);
+  return res.sendStatus(204);
 });
