@@ -62,7 +62,8 @@ export async function deleteUser(userId: string): Promise<UserResponse> {
     .where(eq(users.id, userId))
     .returning();
   if (!result) throw new Error("User not found");
-  return result;
+  const { hashedPassword: _, ...user } = result;
+  return user;
 }
 
 // Chirps resource
