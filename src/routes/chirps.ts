@@ -6,8 +6,18 @@ import {
 } from "express";
 import { config } from "../config.js";
 import { getBearerToken, validateJWT } from "../auth.js";
-import { BadRequestError } from "../Middleware/custom_errClases.js";
-import { createChirp, getChirps, getOneChirp } from "../db/queries/users.js";
+import {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+} from "../Middleware/custom_errClases.js";
+import {
+  getUser,
+  createChirp,
+  getChirps,
+  getOneChirp,
+  deleteChirp,
+} from "../db/queries/users.js";
 
 const MAX_CHIRP_LENGTH = 140;
 const BANNED_WORDS = ["kerfuffle", "sharbert", "fornax"];
@@ -43,6 +53,25 @@ chirpsRouter.get("/chirps/:chirpId", async (req: Request, res: Response) => {
   const chirp = await getOneChirp(req.params.chirpId as string);
   return res.status(200).json(chirp);
 });
+
+chirpsRouter.delete(
+  "/chirps/:chirpId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const token = getBearerToken(req);
+    const userId = validateJWT(token, config.jwt_secret);
+
+    const chirp = await getOneChirp(req.params.chirpId as string);
+    if (!chirp) {
+      return next(new NotFoundError("chirp not found"));
+    }
+    if (chirp.userId !== userId) {
+      return next(new ForbiddenError("you are not authorized to delete this chirp"));
+    }
+
+    await deleteChirp(req.params.chirpId as string);
+    return res.sendStatus(204);
+  },
+);
 
 function cleanChirp(body: string): string {
   return body
