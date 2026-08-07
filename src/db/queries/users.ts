@@ -52,6 +52,10 @@ export async function updateUserCredentials(
   return user;
 }
 
+export async function upgradeUser(userId: string) {
+  await db.update(users).set({ isChirpyRed: true }).where(eq(users.id, userId));
+}
+
 export async function deleteUsers() {
   await db.delete(users);
 }
