@@ -12,7 +12,6 @@ import {
   ForbiddenError,
 } from "../Middleware/custom_errClases.js";
 import {
-  getUser,
   createChirp,
   getChirps,
   getOneChirp,
