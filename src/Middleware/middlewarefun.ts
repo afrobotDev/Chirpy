@@ -71,7 +71,9 @@ function handleError(
   _next: NextFunction,
 ) {
   const statusCode = (err as any).statusCode || 400;
-  return res.status(statusCode).json({ error: err.message });
+  const message = err.message;
+  const cause = (err as any).cause?.message || "";
+  return res.status(statusCode).json({ error: message + (cause ? ": " + cause : "") });
 }
 
 export {
