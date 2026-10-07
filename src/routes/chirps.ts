@@ -48,8 +48,11 @@ chirpsRouter.get("/chirps", async (_req: Request, res: Response) => {
   return res.status(200).json(chirps);
 });
 
-chirpsRouter.get("/chirps/:chirpId", async (req: Request, res: Response) => {
+chirpsRouter.get("/chirps/:chirpId", async (req: Request, res: Response, next: NextFunction) => {
   const chirp = await getOneChirp(req.params.chirpId as string);
+  if (!chirp) {
+    return next(new NotFoundError("chirp not found"));
+  }
   return res.status(200).json(chirp);
 });
 
