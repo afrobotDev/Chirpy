@@ -1,6 +1,6 @@
 # Chirpy
 
-Chirpy is a small make believe social network API built with TypeScript, Express, PostgreSQL, Drizzle ORM. It supports user accounts, short posts ("chirps"), JWT access tokens,, refresh tokens, and a Polka webhook for Chirpy Red upgrade.
+Chirpy is a small make believe social network API built with TypeScript, Express, PostgreSQL, and Drizzle ORM. It supports user accounts, short posts ("chirps"), JWT access tokens, refresh tokens, and a Polka webhook for Chirpy Red upgrade.
 
 ## Requirements
 
@@ -86,7 +86,7 @@ Request:
 
 ```json
 {
-    "id": chirp-uuid",
+    "id": "chirp-uuid",
     "createdAt": "2026-01-01T12:00:00.000z",
     "updatedAt": "2026-01-01T12:00:00.000z",
     "body": "Hello from Chirpy!",
@@ -108,7 +108,7 @@ List chirps, oldest first by default. Optional query parameters:
 Example:
 
 ```http
-Get /api/chirps?authorId=user-uuid&sort=desc
+GET /api/chirps?authorId=user-uuid&sort=desc
 ```
 
 **200 OK** returns an array of chirps:
@@ -138,7 +138,7 @@ Delete a chirp you own. Required a valid access token.
 Headers:
 
 ```http
-Authorization: Bearer <acces-token>
+Authorization: Bearer <access-token>
 ```
 
 **204 No Content** indicates success. **401 Unauthorized** indicates a missing or invalid token. **403 Forbidden** indicates the chirp belongs to another user. **404 Not Found** indicates the chirp does not exist.
@@ -159,7 +159,7 @@ Request:
 }
 ```
 
-**201 Created** returns the new user. Password are hashed and are never included in user responses.
+**201 Created** returns the new user. Passwords are hashed and are never included in user responses.
 
 ```json
 {
@@ -184,7 +184,7 @@ Request:
 }
 ```
 
-**200 0K** returns the user, a one-hour access token, and a refresh token:
+**200 OK** returns the user, a one-hour access token, and a refresh token:
 ```json
 {
     "result": {
@@ -231,11 +231,11 @@ Request:
 }
 ```
 
-**200 OK** returns the updated user object, without the passowrd hash. **401 Unauthorized** indicates a missing or invalid token.
+**200 OK** returns the updated user object, without the password hash. **401 Unauthorized** indicates a missing or invalid token.
 
 #### `GET /api/users`
 
-List users, newest first. Passowrd hashes are omitted.
+List users, newest first. Password hashes are omitted.
 
 **200 OK**:
 
@@ -261,7 +261,7 @@ Delete the authenticated user's account. Requires a valid access token whose use
 
 ### Polka webhook
 
-#### `POST /api/polka/webhookks`
+#### `POST /api/polka/webhooks`
 
 Handle Polka account events. For a `user.upgrade` event, provide the configured API key using the `ApiKey` authorization scheme:
 
@@ -289,7 +289,7 @@ Request:
 | --------- | ---------------- | -------------------------------------- |
 | `DELETE`  | `/admin/reset`   | Delete all users (and their related data). Available only when `PLATFORM=dev`; returns **200** on success and **403** otherwise. |
 | `GET`     | `/admin/metrics` | Return an HTML page showing the number of requests served from the static app.                                                   |
-| `GET`     | `/app`           | Server the bundled web app             |
+| `GET`     | `/app`           | Serve the bundled web app              |
 
 ## Errors
 
@@ -301,7 +301,7 @@ API errors use this JSON shape:
 }
 ```
 
-Common status codes are **400** for invalid input, **401** for missing or invalid credentials, **403** for a forbidden action, and **404** when a request resource is not found. Unexpected errors currently use **400** as the default status.
+Common status codes are **400** for invalid input, **401** for missing or invalid credentials, **403** for a forbidden action, and **404** when a requested resource is not found. Unexpected errors currently use **400** as the default status.
 
 
 ## Data model
