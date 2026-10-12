@@ -45,7 +45,8 @@ chirpsRouter.post(
 
 chirpsRouter.get("/chirps", async (req: Request, res: Response) => {
   const authorId = req.query.authorId as string | undefined;
-  const chirps = await getChirps(authorId);
+  const sort = req.query.sort as string | undefined;
+  const chirps = await getChirps(authorId, sort);
   return res.status(200).json(chirps);
 });
 
