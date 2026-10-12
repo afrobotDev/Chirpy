@@ -59,7 +59,7 @@ Check that the server is responding.
 OK
 ```
 
-### chirps
+### Chirps
 
 A chirp body may contain up to 140 characters. The words `kerfuffle`, `sharbert`, and `fornax` are replaced with `****` before a chirp is saved.
 
@@ -133,7 +133,7 @@ Fetch one chirp by ID.
 
 #### `DELETE /api/chirps/:chirpId`
 
-Delete a chirp you own. Required a valid access token.
+Delete a chirp you own. Requires a valid access token.
 
 Headers:
 
