@@ -6,6 +6,7 @@ const requestNum: APIConfig = {
   dbURL: "",
   PLATFORM: "",
   jwt_secret: "",
+  polkaKey: "",
 };
 
 const middlewareMetricsInc = function (
