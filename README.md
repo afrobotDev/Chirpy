@@ -1,6 +1,6 @@
 # Chirpy
 
-Chirpy is a small chirp-sharing API built with TypeSCript, Express, PostgreSQL, Drizzle ORM. It supports user accounts, short posts ("chirps"), JWT access tokens,, refresh tokens, and a Polka webhook for Chirpy Red upgrade.
+Chirpy is a small make believe social network API built with TypeScript, Express, PostgreSQL, Drizzle ORM. It supports user accounts, short posts ("chirps"), JWT access tokens,, refresh tokens, and a Polka webhook for Chirpy Red upgrade.
 
 ## Requirements
 
