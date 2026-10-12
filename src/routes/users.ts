@@ -5,7 +5,12 @@ import {
   type NextFunction,
 } from "express";
 import { config } from "../config.js";
-import { hashPassword, getBearerToken, validateJWT } from "../auth.js";
+import {
+  hashPassword,
+  getBearerToken,
+  getAPIKEY,
+  validateJWT,
+} from "../auth.js";
 import {
   createUser,
   getUsers,
@@ -33,15 +38,21 @@ usersRouter.post(
   "/polka/webhooks",
   async (req: Request, res: Response, next: NextFunction) => {
     const { event, data } = req.body;
+    if (event !== "user.upgrade") {
+      return res.sendStatus(204);
+    }
     try {
-      if (event !== "user.upgrade") {
-        return res.status(204);
+      const token = getAPIKEY(req);
+      if (token !== config.polkaKey) {
+        return next(new UnauthorizedError("invalid or missing token"));
       }
-      const userId = data.userId;
-      await upgradeUser(userId);
-      return res.status(204).json();
-    } catch {
-      return next(new NotFoundError("user not found"));
+      const upgraded = await upgradeUser(data.userId);
+      if (!upgraded) {
+        return next(new NotFoundError("user not found"));
+      }
+      return res.sendStatus(204);
+    } catch (err) {
+      return next(err);
     }
   },
 );
