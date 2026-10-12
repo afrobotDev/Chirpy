@@ -81,12 +81,12 @@ export async function createChirp(chirp: NewChirp) {
   return result;
 }
 
-export async function getChirps(authorId?: string) {
+export async function getChirps(authorId?: string, sort?: string) {
   const result = await db
     .select()
     .from(chirps)
     .where(authorId ? eq(chirps.userId, authorId) : undefined)
-    .orderBy(asc(chirps.createdAt));
+    .orderBy(sort === "desc" ? desc(chirps.createdAt) : asc(chirps.createdAt));
   return result;
 }
 
